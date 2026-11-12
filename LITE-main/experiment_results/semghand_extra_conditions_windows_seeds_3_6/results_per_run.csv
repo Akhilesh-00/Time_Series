@@ -1,0 +1,13 @@
+dataset,condition,seed,accuracy,training_seconds,epochs_run,best_epoch
+SemgHandMovementCh2,first_difference,3,0.2688888888888889,519.3249094000003,100,100
+SemgHandMovementCh2,validation_and_difference,3,0.2733333333333333,200.22875740000018,48,38
+SemgHandMovementCh2,validation_refit,3,0.3711111111111111,592.5402563000007,130,60
+SemgHandMovementCh2,first_difference,4,0.37333333333333335,494.78277699999944,100,100
+SemgHandMovementCh2,validation_and_difference,4,0.22666666666666666,172.77281120000043,40,30
+SemgHandMovementCh2,validation_refit,4,0.3,442.1987865000001,96,43
+SemgHandMovementCh2,first_difference,5,0.31777777777777777,523.8122995000003,100,100
+SemgHandMovementCh2,validation_and_difference,5,0.24222222222222223,226.42718160000004,54,44
+SemgHandMovementCh2,validation_refit,5,0.25555555555555554,491.0729848000001,114,52
+SemgHandMovementCh2,first_difference,6,0.3466666666666667,574.3687787000008,100,99
+SemgHandMovementCh2,validation_and_difference,6,0.18888888888888888,182.2654051999998,32,22
+SemgHandMovementCh2,validation_refit,6,0.2511111111111111,593.5743762000002,108,49
