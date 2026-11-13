@@ -1,0 +1,4 @@
+dataset,run,seeds,mean_single,ensemble_all,paper_LITE,paper_LITETime
+PigAirwayPressure,original,"[5, 6, 7, 8, 9]",0.40769230769230774,0.5336538461538461,0.347,0.471
+PigAirwayPressure,scale_only,"[5, 6, 7, 8, 9]",0.4288461538461538,0.6057692307692307,0.347,0.471
+SemgHandMovementCh2,jitter_only,"[3, 4]",0.4855555555555556,0.5177777777777778,0.479,0.511

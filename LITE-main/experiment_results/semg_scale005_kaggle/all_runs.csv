@@ -1,0 +1,6 @@
+dataset,condition,seed,accuracy,training_seconds,epochs_run,best_epoch,run
+SemgHandMovementCh2,augment,0,0.4377777777777777,1335.462755515,1500,1475,scale_005
+SemgHandMovementCh2,augment,1,0.4088888888888889,1343.477437488,1500,983,scale_005
+SemgHandMovementCh2,augment,2,0.4466666666666666,1335.279724458,1500,1499,scale_005
+SemgHandMovementCh2,augment,3,0.4822222222222222,1338.4216637139998,1500,1499,scale_005
+SemgHandMovementCh2,augment,4,0.4088888888888889,1314.706203654,1500,1499,scale_005

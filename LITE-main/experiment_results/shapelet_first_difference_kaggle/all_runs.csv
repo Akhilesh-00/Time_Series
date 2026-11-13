@@ -1,0 +1,11 @@
+dataset,condition,seed,accuracy,training_seconds,epochs_run,best_epoch,run
+ShapeletSim,first_difference,0,0.6722222222222223,329.722699972,1500,1500,first_difference
+ShapeletSim,first_difference,1,0.65,333.61283922300004,1500,1500,first_difference
+ShapeletSim,first_difference,2,0.7166666666666667,328.84492286,1500,1500,first_difference
+ShapeletSim,first_difference,3,0.6388888888888888,329.04352270000004,1500,1500,first_difference
+ShapeletSim,first_difference,4,0.7333333333333333,325.6005643190001,1500,1500,first_difference
+ShapeletSim,original,0,0.6944444444444444,322.392094215,1500,1500,original
+ShapeletSim,original,1,0.6833333333333333,328.919713281,1500,1500,original
+ShapeletSim,original,2,0.7333333333333333,325.775039891,1500,1500,original
+ShapeletSim,original,3,0.7055555555555556,322.659828391,1500,1500,original
+ShapeletSim,original,4,0.7555555555555555,317.8349682190001,1500,1500,original
