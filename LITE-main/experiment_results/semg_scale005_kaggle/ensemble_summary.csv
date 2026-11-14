@@ -1,0 +1,2 @@
+dataset,run,seeds,mean_single,ensemble_all,paper_LITE,paper_LITETime
+SemgHandMovementCh2,scale_005,"[0, 1, 2, 3, 4]",0.4368888888888889,0.5,0.479,0.511

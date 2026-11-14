@@ -1,0 +1,13 @@
+dataset,condition,seed,accuracy,training_seconds,epochs_run,best_epoch,run
+PigAirwayPressure,original,5,0.3846153846153846,583.637052042,1500,1500,original
+PigAirwayPressure,original,6,0.4663461538461538,557.0750557669999,1500,1133,original
+PigAirwayPressure,original,7,0.4038461538461538,584.9625138769998,1500,1500,original
+PigAirwayPressure,original,8,0.3990384615384615,584.1674020519999,1500,1500,original
+PigAirwayPressure,original,9,0.3846153846153846,548.5890675119999,1500,1500,original
+PigAirwayPressure,augment,5,0.5625,509.626413429,1500,1467,scale_only
+PigAirwayPressure,augment,6,0.5144230769230769,505.5077062289997,1500,1487,scale_only
+PigAirwayPressure,augment,7,0.3125,510.4248514639999,1500,1472,scale_only
+PigAirwayPressure,augment,8,0.3605769230769231,507.9534789989998,1500,1495,scale_only
+PigAirwayPressure,augment,9,0.3942307692307692,509.2030248230003,1500,1495,scale_only
+SemgHandMovementCh2,augment,3,0.4866666666666667,1387.3831294969998,1500,1391,jitter_only
+SemgHandMovementCh2,augment,4,0.4844444444444444,1368.2779539939995,1500,1494,jitter_only
