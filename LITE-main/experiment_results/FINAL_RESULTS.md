@@ -25,6 +25,23 @@ Six UCR datasets were used, loaded with aeon and z-normalised per series as in t
 - **Ensembles:** softmax outputs of models trained with different seeds are averaged, the same way LITETime combines 5 LITE models.
 - **Comparisons:** each method is compared with plain LITE on the same seeds and the same machine (laptop GTX 1650 under WSL, or Kaggle T4). The same seed does not give identical results on different machines.
 
+## Reproduction of plain LITE
+
+Our plain LITE runs (the paper's method, unchanged) land close to the paper on all six datasets. All Kaggle T4 runs; computed in `LITE_reproduction.ipynb`. Ensembles are 5 models (for Pig and Beef, the mean over every 5-model subset of 10 models); Kaggle kept only 3 SemgHand models, so SemgHand is compared with the paper's LITETime-3.
+
+![Our reproduction of plain LITE vs the paper](figures/reproduction_vs_paper.png)
+
+| Dataset | Ours, single mean (%) | Paper LITE (%) | Ours, ensemble (%) | Paper LITETime (%) | Seeds |
+| --- | --- | --- | --- | --- | --- |
+| Wine | 66.7 | 64.1 | 66.7 | 66.7 | 0–4 |
+| OliveOil | 69.3 | 69.3 | 73.3 | 80.0 | 0–4 |
+| ShapeletSim | 71.4 | 73.8 | 77.2 | 75.0 | 0–4 |
+| Beef | 73.7 | 72.0 | 74.5 | 76.7 | 0–9 |
+| PigAirwayPressure | 32.9 | 34.7 | 46.6 | 47.1 | 0–9 |
+| SemgHandMovementCh2 | 46.8 | 47.9 | 50.0 (3 models) | 51.4 (LITETime-3) | 0–4 |
+
+OliveOil's ensemble is 2 of 30 test series below the paper; seed 2 scored 50%. On Wine, plain LITE collapsed on 3 of 5 seeds on the laptop (ensemble 55.6%) but not on Kaggle (66.7%), so the laptop baseline in the tables below is unusually low for Wine.
+
 ## Methods tried
 
 Ten changes to LITE were tested; the first four change how training is controlled or what the model sees, the rest add augmentation or fix the model after training.
@@ -150,7 +167,7 @@ The largest gains (Pig, Wine, SemgHand) are well beyond seed noise; the small on
 | Ensemble evaluation of saved checkpoints | `ensemble_eval.py` |
 | Batch-norm recalibration and mixed ensembles | `recalibrate_eval.py` |
 | Final results notebook (loads saved models, computes all metrics and figures) | `LITE_final_results.ipynb` → `experiment_results/figures/`, `final_results_computed.csv` |
-| Reproduction notebook (plain LITE on Wine and OliveOil, Kaggle) | `LITE_reproduction_kaggle.ipynb` |
+| Reproduction notebook (loads our plain LITE models for all six datasets, compares with the paper, checks against the training logs) | `LITE_reproduction.ipynb` → `reproduction_models/`, `experiment_results/reproduction_summary_computed.csv` |
 | Saved models used by the final notebook | `final_models/<dataset>/<method>/seed_N.keras` |
 | Kaggle notebooks | `LITE_*_kaggle.ipynb` (augment, augment components, augconfirm, ensemble, ensemble Beef/Pig, SemgHand scale 0.05, ShapeletSim first difference) |
 | Per-run results (CSV) | `experiment_results/` — one folder per experiment, e.g. `scale_only_laptop/`, `augconfirm_pig_kaggle/`, `shapelet_first_difference_kaggle/` |
