@@ -42,6 +42,8 @@ Ten changes to LITE were tested; the first four change how training is controlle
 
 ## Results per method
 
+![Change in mean single-model accuracy vs plain LITE, per method and dataset](figures/method_effects.png)
+
 ### Validation and first difference (methods 1–4)
 
 None of these beat plain LITE. Mean single-model accuracy, 1500 epochs, seeds 0–4.
@@ -107,11 +109,15 @@ Recalibration improved 4 of 6 datasets without retraining. It mainly repairs mod
 | ShapeletSim | 72.7 → 72.2 | 73.9 → 73.9 | 75.0 |
 | Beef | 72.0 → 70.7 | 76.7 → 73.3 | 76.7 |
 
+![PigAirwayPressure ensembles before and after recalibration vs the paper's LITETime-k](figures/recalibration_pig.png)
+
 Recalibrating scale-only models raised single models (Pig 42.9% → 51.8%, Wine 70.4% → 80.4%) but not ensembles (Pig 60.6% → 60.1%, Wine 87.0% → 79.6%). The two fixes overlap rather than add up.
 
 ## Best result per dataset
 
 Five of six datasets beat the paper's LITETime with at least one method; Beef tied. The best method differs by dataset.
+
+![Best 5-model ensemble per dataset vs paper LITETime](figures/best_vs_paper.png)
 
 | Dataset | Best method | Ours (%) | Paper LITETime (%) | Gap in test series |
 | --- | --- | --- | --- | --- |
@@ -143,6 +149,9 @@ The largest gains (Pig, Wine, SemgHand) are well beyond seed noise; the small on
 | Training script (all conditions, augmentation flags) | `run_ablation.py` |
 | Ensemble evaluation of saved checkpoints | `ensemble_eval.py` |
 | Batch-norm recalibration and mixed ensembles | `recalibrate_eval.py` |
+| Final results notebook (loads saved models, computes all metrics and figures) | `LITE_final_results.ipynb` → `experiment_results/figures/`, `final_results_computed.csv` |
+| Reproduction notebook (plain LITE on Wine and OliveOil, Kaggle) | `LITE_reproduction_kaggle.ipynb` |
+| Saved models used by the final notebook | `final_models/<dataset>/<method>/seed_N.keras` |
 | Kaggle notebooks | `LITE_*_kaggle.ipynb` (augment, augment components, augconfirm, ensemble, ensemble Beef/Pig, SemgHand scale 0.05, ShapeletSim first difference) |
 | Per-run results (CSV) | `experiment_results/` — one folder per experiment, e.g. `scale_only_laptop/`, `augconfirm_pig_kaggle/`, `shapelet_first_difference_kaggle/` |
 
