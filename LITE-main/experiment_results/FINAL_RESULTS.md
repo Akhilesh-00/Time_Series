@@ -85,7 +85,7 @@ The full augmentation hurt both datasets; scale caused the drop on SemgHand and 
 | Full (scale + noise + shift) | 41.0 | 9.6 |
 | Shift only | 45.1 | 27.3 |
 | Scale only | 42.3 | **33.8** |
-| Noise only | 46.1 | 13.6 |
+| Noise only | 46.1 | 13.7 |
 
 ### Scale-only augmentation (methods 6–8)
 
