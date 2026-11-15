@@ -155,4 +155,4 @@ The largest gains (Pig, Wine, SemgHand) are well beyond seed noise; the small on
 | Kaggle notebooks | `LITE_*_kaggle.ipynb` (augment, augment components, augconfirm, ensemble, ensemble Beef/Pig, SemgHand scale 0.05, ShapeletSim first difference) |
 | Per-run results (CSV) | `experiment_results/` — one folder per experiment, e.g. `scale_only_laptop/`, `augconfirm_pig_kaggle/`, `shapelet_first_difference_kaggle/` |
 
-Model checkpoints (`.keras`) are not in the repo; they stay in the local `results_ablation/` folders and the Kaggle output zips. `recalibrate_eval.py` needs them.
+The models used by the final notebook are in `final_models/`. Other checkpoints (methods not used in the final results) are not in the repo; they stay in the local `results_ablation/` folders and the Kaggle output zips.
