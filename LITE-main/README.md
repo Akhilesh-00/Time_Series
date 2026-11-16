@@ -97,7 +97,7 @@ The consolidated findings and experiment-specific caveats are in [`experiment_re
 | --- | --- | ---: | ---: |
 | Wine | Scale-only, 5 models | 87.0% | 66.7% |
 | PigAirwayPressure | Scale-only, 5 models (seeds 5–9) | 60.6% | 47.1% |
-| SemgHandMovementCh2 | Recalibration, 4 models | 54.2% | 52.5% (4-model reference) |
+| SemgHandMovementCh2 | Recalibration, 4 models | 54.2% | 51.1% (published 5-model reference) |
 | OliveOil | Plain LITE or recalibration, 5 models | 83.3% | 80.0% |
 | ShapeletSim | Scale-only, 5 models | 76.1% | 75.0% |
 | Beef | Plain LITE, 5 models | 76.7% | 76.7% |
