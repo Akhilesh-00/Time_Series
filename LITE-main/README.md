@@ -1,198 +1,116 @@
-> ⚠️ **Alert:** If you are using this code with **Keras v3**, make sure you are using **Keras ≥ 3.6.0**.  
-> Earlier versions of Keras v3 do not honor `trainable=False`, which will result in **training hand-crafted filters** in **LITE** and **LITEMV** unexpectedly.
+# Reproducing and Evaluating LITE for Time-Series Classification
 
+This project reproduces and experimentally evaluates **LITE (Light Inception with boosTing tEchniques)** on six UCR time-series classification datasets. It also studies validation-based early stopping, first-difference input, data augmentation, ensembles, and post-training batch normalization recalibration.
 
-# LITE: Light Inception with boosTing tEchniques for Time Series Classification
+The codebase builds on the LITE work by A. Ismail-Fawaz, M. Devanne, S. Berretti, J. Weber, and G. Forestier. Please cite their [2023 LITE paper](https://doi.org/10.1109/DSAA60987.2023.10302569) and [2025 journal article](https://doi.org/10.1007/s41060-024-00708-5) when using the original method. This repository contains our course project experiments, not a new implementation of the original architecture.
 
-This is the source code of our paper "[LITE: Light Inception with boosTing tEchniques for Time Series Classification](https://germain-forestier.info/publis/dsaa2023.pdf)" accepted at the 10th IEEE International Conference on Data Science and Advanced Analytics ([DSAA 2023](https://conferences.sigappfr.org/dsaa2023/)) in the  Learning from Temporal Data ([LearnTeD](https://dsaa2023.inesctec.pt/)) special session track. <br>
-This is the source code for the extended version of the DSAA 2023 paper, "[Look into the LITE in deep learning for time series classification](https://link.springer.com/article/10.1007/s41060-024-00708-5)" published in the [International Journal of Data Science and Analytics](https://link.springer.com/journal/41060) in their special issue on [Learning from Temporal Data](https://link.springer.com/collections/dibidcifjj).
-This work was done by [Ali Ismail-Fawaz](https://hadifawaz1999.github.io/), [Maxime Devanne](https://maxime-devanne.com/), [Stefano Berretti](www.micc.unifi.it/berretti/), [Jonathan Weber](https://www.jonathan-weber.eu/) and [Germain Forestier](https://germain-forestier.info/).
+## Project structure
 
+- `src/`: LITE classifier and data-loading utilities.
+- `main.py`: single-dataset training entry point.
+- `run_ablation.py`: per-seed training and ablation runner.
+- `ensemble_eval.py`: ensemble evaluation from saved run outputs.
+- `recalibrate_eval.py`: batch normalization recalibration evaluation.
+- `experiment_results/`: result summaries and available experiment outputs.
+- `final_models/`: retained models used for the final-results recalibration evaluation.
+- `LITE_reproduction.ipynb` and other `*.ipynb` files: notebook-based reproduction and experiment workflows.
 
+## Datasets and data loading
 
-## Project Overview
+Experiments use the official train/test splits for six UCR time-series classification datasets:
 
-This repository contains the original LITE implementation and an additional experimental investigation into techniques for improving LITE time-series classification. The experiments compare modifications against the original LITE and LITETime baselines across six UCR datasets.
+- Beef
+- OliveOil
+- PigAirwayPressure
+- SemgHandMovementCh2
+- ShapeletSim
+- Wine
 
-The aim is to understand which techniques help, under what dataset conditions they help, and where they fail. The experimental work is an extension of the published LITE implementation; it does not claim authorship of the original LITE architecture.
+The project loads the UCR data through `aeon` and applies the LITE preprocessing code, including per-series normalization. The data are downloaded and cached by `aeon` on first use, so the first run needs an internet connection. No manual dataset upload or change to the official split is required.
 
-## Experimental Contributions
+## Environment setup
 
-The investigation evaluates four main areas:
+Use Python 3.10–3.12; Python 3.11 is a suitable choice for the pinned TensorFlow version.
 
-1. **Data augmentation:** amplitude scaling, Gaussian noise and circular time shifts, tested individually and in combination.
-2. **Input transformations:** first-difference features added as an additional input channel.
-3. **Ensemble learning:** averaging softmax probabilities from multiple LITE models, following the LITETime approach.
-4. **Batch normalisation recalibration:** recomputing batch-normalisation statistics after training using training data, without retraining or using test data.
-
-Validation-based training and validation-based epoch selection with full-training-set refitting were also investigated.
-
-## Key Findings
-
-The results are dataset-dependent; no single modification consistently improves performance across all six datasets. Selected findings include:
-
-| Dataset | Experimental result | Paper LITETime baseline |
-|---|---:|---:|
-| Wine | 87.0% (scale-only ensemble) | 66.7% |
-| PigAirwayPressure | 60.6% (scale-only ensemble) | 47.1% |
-| SemgHandMovementCh2 | 54.2% (recalibrated 4-model ensemble) | 51.1% |
-| OliveOil | 83.3% (plain LITE or recalibration) | 80.0% |
-| ShapeletSim | 76.1% (scale-only ensemble) | 75.0% |
-| Beef | 76.7% (plain LITE or first-difference ensemble) | 76.7% |
-
-These are the best observed results per dataset, selected after evaluating the methods, and should not be interpreted as evidence that one fixed method generalises across all datasets. The experiments use limited numbers of seeds and some datasets have small test sets. See the full report for the detailed comparisons and caveats.
-
-**Detailed experimental report:** [experiment_results/FINAL_RESULTS.md](experiment_results/FINAL_RESULTS.md).
-
-## Repository Structure
-
-| Path | Description |
-|---|---|
-| `src/` | LITE model and supporting implementation |
-| `main.py` | Original LITE training and evaluation entry point |
-| `run_ablation.py` | Runs controlled training ablation experiments |
-| `ensemble_eval.py` | Evaluates ensembles of saved LITE checkpoints |
-| `recalibrate_eval.py` | Evaluates batch-normalisation recalibration |
-| `experiment_results/` | Experimental summaries and per-run result files |
-| `LITE_*_kaggle.ipynb` | Experiment-specific Kaggle notebooks |
-| `results.csv` and other result CSVs | Original benchmark and experimental result tables |
-
-## The LITE architecture
-
-The same LITE architecture is then used to form an ensemble of five LITE models, names LITETime.
-<p align="center" width="50%">
-<img src="images/LITE.png" alt="lite"/>
-</p>
-
-## Usage of the code
-
-To use this code, running the ```main.py``` file with the following options in the parsed as arguments:
-
-```
---dataset : to choose the dataset from the UCR Archive (default=Coffee)
---classifier : to choose the classifier, in this case only LITE can be chosen (default=LITE)
---runs : to choose the number of runs (default=5)
---output-directory : to choose the output directory name (default=results/)
---track-emissions : to choose wether or not to track the training/testing time and CO2/power consumotion.
+```bash
+git clone https://github.com/Akhilesh-00/Time_Series.git
+cd Time_Series/LITE-main
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 ```
 
-### Adaptation of code
+On Windows, activate the environment with `.venv/Scripts/activate` instead of the `source` command.
 
-The only change to be done in the code is the ```folder_path``` in the `utils/utils.py` file, this line. This directory should point to the parent directory of the UCR Archive datasets.
+The editable install reads dependencies from `pyproject.toml`, including TensorFlow, Keras, and `aeon`. For available runner options, use:
 
-### Using [aeon-toolkit](https://github.com/aeon-toolkit/aeon) to Train a LITETimeClassifier on your DATA
-
-When using aeon, simply load your data and create an instance of a LITETime classifier and train it, as well as LITEMVTime classifier for multivariate time series <br>
-
+```bash
+python run_ablation.py --help
 ```
-from aeon.datasets import load_classification
-from aeon.classification.deep_learning import LITETimeClassifier
 
-xtrain, ytrain, _ = load_classification(name="Coffee", split="train")
-xtest, ytest, _ = load_classification(name="Coffee", split="test")
+## Experiments
 
-# using LITETime
-clf = LITETimeClassifier(n_classifiers=5)
-clf.fit(xtrain, ytrain)
-print(clf.score(xtest, ytest)
+The report uses explicit training settings because the runner's defaults are shorter than the paper-style 1500-epoch budget. The commands below are reproducible examples; exact scores can vary with the hardware, software environment, and run group. Each run records the selected configuration's per-seed scores and timing in its output directory.
 
-# using LITEMVTime for multivariate
-clf = LITETimeClassifier(n_classifiers=5, use_litemv=True)
-clf.fit(xtrain, ytrain)
-print(clf.score(xtest, ytest)
+### Plain LITE and validation-based early stopping
+
+This runs the matched original and validation conditions on SemgHandMovementCh2 with five seeds:
+
+```bash
+python run_ablation.py \
+  --datasets SemgHandMovementCh2 \
+  --seeds 0 1 2 3 4 \
+  --epochs 1500 \
+  --patience 100 \
+  --lr-patience 50 \
+  --val-split 0.2 \
+  --conditions original validation \
+  --output-dir results_ablation/semghand_validation
 ```
+
+### Scale-only augmentation
+
+This example runs the PigAirwayPressure seed group used for the reported five-model scale-only ensemble. The augmentation flags leave noise and shifting disabled:
+
+```bash
+python run_ablation.py \
+  --datasets PigAirwayPressure \
+  --seeds 5 6 7 8 9 \
+  --epochs 1500 \
+  --patience 100 \
+  --lr-patience 50 \
+  --conditions augment \
+  --aug-scale 0.1 \
+  --aug-jitter 0 \
+  --aug-shift 0 \
+  --output-dir results_ablation/pig_scale_only
+```
+
+Use a separate output directory for each configuration so results do not overwrite one another. Run `python ensemble_eval.py --help` or `python recalibrate_eval.py --help` for the corresponding evaluation options.
 
 ## Results
 
-Results can be found in the [results.csv](https://github.com/MSD-IRIMAS/LITE/blob/main/results.csv) file for [FCN](https://github.com/hfawaz/dl-4-tsc/blob/master/classifiers/fcn.py), [ResNet](https://github.com/hfawaz/dl-4-tsc/blob/master/classifiers/resnet.py), [Inception](https://github.com/hfawaz/InceptionTime), [InceptionTime](https://github.com/hfawaz/InceptionTime), [ROCKET](https://github.com/angus924/rocket), [MultiROCKET](https://github.com/ChangWeiTan/MultiRocket), LITE and LITETime. For non-ensemble methods, results are averaged over five runs, for ensemble methods, we ensemble the five runs.
+The consolidated findings and experiment-specific caveats are in [`experiment_results/FINAL_RESULTS.md`](experiment_results/FINAL_RESULTS.md). These are the best observed results in the experiments, not the outcome of one universally effective method:
 
-### Average performance and FLOPS comparison
+| Dataset | Best observed setup | Accuracy | Published LITETime reference |
+| --- | --- | ---: | ---: |
+| Wine | Scale-only, 5 models | 87.0% | 66.7% |
+| PigAirwayPressure | Scale-only, 5 models (seeds 5–9) | 60.6% | 47.1% |
+| SemgHandMovementCh2 | Recalibration, 4 models | 54.2% | 52.5% (4-model reference) |
+| OliveOil | Plain LITE or recalibration, 5 models | 83.3% | 80.0% |
+| ShapeletSim | Scale-only, 5 models | 76.1% | 75.0% |
+| Beef | Plain LITE, 5 models | 76.7% | 76.7% |
 
-The following figure shows the comparison between LITE and state of the art complex deep learners. The comparison consists on the average performance and the number FLOPS.
-<p align="center" width="100%">
-<img src="images/summary_with_flops.png" alt="flops"/>
-</p>
+Ensemble sizes vary where identified: the SemgHandMovementCh2 recalibration result uses four models; the other rows above use five. The Semg comparison is therefore shown against the size-matched four-model LITETime reference. These best methods were selected after examining test results, so the table is exploratory and may overstate general performance. It does not demonstrate that one change improves all datasets.
 
-### LITE 1v1 with FCN, ResNet and Inception
+### Saved results and models
 
-The following compares LITE with FCN, ResNet and Inception using the accuracy performance on the test set of the 128 datasts of the UCR archive.
+Per-run CSVs and plots are written under the output directory supplied to `run_ablation.py`. Committed aggregate files and experiment notes are under `experiment_results/`.
 
-<p align="center" width="100%">
-<img src="images/results_lite.png" alt="1v1lite"/>
-</p>
+The retained models used for the final-results recalibration evaluation are in `final_models/`. Checkpoints from every exploratory run and per-run recalibration CSVs were not retained, so the repository does not provide all artifacts needed to regenerate every reported result from individual predictions.
 
-### LITETime 1v1 with ROCKET and InceptionTime
+## Original work
 
-The following compares LITE with FCN, ResNet and Inception using the accuracy performance on the test set of the 128 datasts of the UCR archive.
-
-<p align="center" width="50%">
-<img src="images/results_litetime.png" alt="1v1litetime"/>
-</p>
-
-### LITETime MCM with SOTA
-
-The following 1v1 and multi-comparison matrix shows the performance of LITETime with respect to the SOTA models for Time Series Classification.
-
-The following compares LITE with FCN, ResNet and Inception using the accuracy performance on the test set of the 128 datasts of the UCR archive.
-
-<p align="center" width="100%">
-<img src="images/litetime1v1-mcm.png" alt="mcm-litetime"/>
-</p>
-
-### CD Diagram
-
-The following Critical Difference Diagram (CDD) shows the comparison following the average rank between classifiers.
-
-<p align="center" width="100%">
-<img src="images/cdd.png" alt="cdd"/>
-</p>
-
-
-## Experimental Setup and Reproducibility
-
-The experimental scripts use Python with TensorFlow/Keras, NumPy, scikit-learn and aeon. Experiments were run across local GPU and Kaggle GPU environments. The detailed report records the datasets, training configurations, seeds, comparisons and observed limitations.
-
-The original LITE entry point and the additional experimental scripts serve different purposes: the usage instructions above describe the original `main.py` workflow, while `run_ablation.py`, `ensemble_eval.py` and `recalibrate_eval.py` support the experimental investigation described in the report.
-
-**Checkpoint availability:** Model checkpoints (`.keras`) are not included in this repository. Checkpoint-dependent evaluations, including batch-normalisation recalibration, require the corresponding saved model files from the local results folders or Kaggle output archives. The committed scripts, notebooks, result files and report document the experiments, but the absence of checkpoints means those evaluations cannot be reproduced from this repository alone.
-
-## Requirements
-
-```
-numpy
-pandas
-scikit-learn
-tensorflow>=2.16.1
-keras>=3.6.0
-matplotlib
-codecarbon
-```
-
-## Citation
-
-```
-@article{ismail2025look,
-  title={Look into the lite in deep learning for time series classification},
-  author={Ismail-Fawaz, Ali and Devanne, Maxime and Berretti, Stefano and Weber, Jonathan and Forestier, Germain},
-  journal={International Journal of Data Science and Analytics},
-  pages={1--21},
-  year={2025},
-  publisher={Springer}
-}
-@inproceedings{Ismail-Fawaz2023LITELightInception,
-  author = {Ismail-Fawaz, A. and Devanne, M. and Berretti, S. and Weber, J. and Forestier, G.},
-  title = {LITE: Light Inception with boosTing tEchniques for Time Series Classification},
-  booktitle = {International Conference on Data Science and Advanced Analytics (DSAA)},
-  year = {2023}
-}
-```
-
-
-## Acknowledgments
-
-This work was supported by the ANR DELEGATION project (grant ANR-21-CE23-0014) of the French Agence Nationale de la Recherche. The authors would like to acknowledge the High Performance Computing Center of the University of Strasbourg for supporting this work by providing scientific support and access to computing resources. Part of the computing resources were funded by the Equipex Equip@Meso project (Programme Investissements d’Avenir) and the CPER Alsacalcul/Big Data. The authors would also like to thank the creators and providers of the UCR Archive.
-
-
-
-
-
+- Ismail-Fawaz et al., “[LITE: Light Inception with boosTing tEchniques for Time Series Classification](https://doi.org/10.1109/DSAA60987.2023.10302569),” DSAA, 2023.
+- Ismail-Fawaz et al., “[Look into the LITE in deep learning for time series classification](https://doi.org/10.1007/s41060-024-00708-5),” *International Journal of Data Science and Analytics*, 2025.
