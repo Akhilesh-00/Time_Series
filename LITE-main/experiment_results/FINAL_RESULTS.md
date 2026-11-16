@@ -4,7 +4,7 @@ Updated 2026-11-16.
 
 ## Summary
 
-The results are dataset-dependent. Scale-only augmentation produced the strongest observed ensemble scores on Wine (87.0% vs 66.7% for published LITETime) and PigAirwayPressure (60.6% vs 47.1%). Batch normalization recalibration improved selected results, including a four-model SemgHandMovementCh2 ensemble at 54.2%; its published comparison value of 51.1% is for a five-model LITETime ensemble, so that comparison is not size-matched. On SemgHandMovementCh2, validation-based early stopping preserved mean accuracy (46.4% vs 46.6% for plain LITE) while reducing mean training time (3.5 vs 20.2 minutes). No method helped every dataset, and Beef tied the paper reference (76.7%).
+The results are dataset-dependent. Scale-only augmentation produced the strongest observed ensemble scores on Wine (87.0% vs 66.7% for published LITETime) and PigAirwayPressure (60.6% vs 47.1%). Batch normalization recalibration improved selected results, including a four-model SemgHandMovementCh2 ensemble at 54.2%; this is 1.7 points above the published four-model value (LITETime-4, 52.5%). On SemgHandMovementCh2, validation-based early stopping preserved mean accuracy (46.4% vs 46.6% for plain LITE) while reducing mean training time (3.5 vs 20.2 minutes). No method helped every dataset, and Beef tied the paper reference (76.7%).
 
 Validation-based training, first-difference input and full augmentation did not improve test accuracy over plain LITE in the comparisons reported below, although validation-based early stopping substantially reduced training time on SemgHandMovementCh2. Accuracies are test accuracy in percent. Most ensembles average five models, matching LITETime; where an experiment uses a different ensemble size, it is identified explicitly.
 
@@ -128,7 +128,7 @@ Recalibration improved the single-model mean on four of six datasets and changed
 | --- | --- | --- | --- |
 | Wine | 63.0 → **78.5** | 55.6 → **83.3** | 66.7 |
 | PigAirwayPressure (10 seeds) | 32.9 → **40.2** | 46.6 → **50.7** (5 models), 49.0 → **51.0** (10 models) | 47.1 (LITETime-10: 49.5) |
-| SemgHandMovementCh2 (4 seeds) | 46.8 → **49.5** | 52.0 → **54.2** (4 models) | 51.1 (5 models) |
+| SemgHandMovementCh2 (4 seeds) | 46.8 → **49.5** | 52.0 → **54.2** (4 models) | 51.1; LITETime-4: 52.5 |
 | OliveOil | 79.3 → **82.7** | 83.3 → 83.3 | 80.0 |
 | ShapeletSim | 72.7 → 72.2 | 73.9 → 73.9 | 75.0 |
 | Beef | 72.0 → 70.7 | 76.7 → 73.3 | 76.7 |
@@ -139,7 +139,7 @@ Recalibrating scale-only models raised single-model scores (Pig 42.9% → 51.8%,
 
 ## Best result per dataset
 
-Five of six datasets had a best observed score numerically above the listed paper LITETime reference; Beef tied. The best method differs by dataset. The SemgHandMovementCh2 best result uses four models, while its 51.1% paper reference uses five, so that row is not a size-matched comparison.
+Five of six datasets had a best observed score numerically above the listed paper LITETime reference; Beef tied. The best method differs by dataset. The SemgHandMovementCh2 best result uses four models, so it is compared with the published four-model value (LITETime-4, 52.5%) from `results_ensemble_study.csv`.
 
 ![Best observed ensemble result per dataset vs paper LITETime](figures/best_vs_paper.png)
 
@@ -147,7 +147,7 @@ Five of six datasets had a best observed score numerically above the listed pape
 | --- | --- | --- | --- | --- |
 | PigAirwayPressure | Scale only | 60.6 | 47.1 | +28 of 208 |
 | Wine | Scale only | 87.0 | 66.7 | +11 of 54 |
-| SemgHandMovementCh2 | Recalibration (4 models) | 54.2 | 51.1 (5 models) | +14 of 450 |
+| SemgHandMovementCh2 | Recalibration (4 models) | 54.2 | 52.5 (LITETime-4) | +8 of 450 |
 | ShapeletSim | Scale only | 76.1 | 75.0 | +2 of 180 |
 | OliveOil | Plain LITE or recalibration | 83.3 | 80.0 | +1 of 30 |
 | Beef | Plain LITE or first difference | 76.7 | 76.7 | 0 of 30 |
@@ -176,7 +176,9 @@ These are best-observed point estimates. Seed counts are small and methods were 
 | Final results notebook (loads saved models, computes all metrics and figures) | `LITE_final_results.ipynb` → `experiment_results/figures/`, `final_results_computed.csv` |
 | Reproduction notebook (loads our plain LITE models for all six datasets, compares with the paper, checks against the training logs) | `LITE_reproduction.ipynb` → `reproduction_models/`, `experiment_results/reproduction_summary_computed.csv` |
 | Saved models used by the final notebook | `final_models/<dataset>/<method>/seed_N.keras` |
-| Kaggle notebooks | `LITE_*_kaggle.ipynb` (augment, augment components, augconfirm, ensemble, ensemble Beef/Pig, SemgHand scale 0.05, ShapeletSim first difference) |
+| Kaggle training notebooks | `notebooks/kaggle_training/` (augment, augment components, augconfirm, ensemble, ensemble Beef/Pig, SemgHand scale 0.05, ShapeletSim first difference, validation) |
+| Local GPU run scripts (WSL) | `scripts/` |
+| Superseded 100-epoch runs and early summaries | `experiment_results/archive/` |
 | Per-run results (CSV) | `experiment_results/` — one folder per experiment, e.g. `scale_only_laptop/`, `augconfirm_pig_kaggle/`, `shapelet_first_difference_kaggle/` |
 
-The retained models used by the final notebook are in `final_models/`. Checkpoints for other exploratory methods are not included in the repository. Per-run recalibration CSVs were also not present in the reviewed project files, so the recalibration aggregates cannot be fully audited by seed or regenerated from per-run predictions alone.
+The models used by the final notebook are in `final_models/`, and `LITE_final_results.ipynb` regenerates every recalibration result from them, per model and per seed. Checkpoints were not kept for the earliest experiments (full augmentation, augmentation components, SemgHand scale 0.1), so those results come from the accuracies logged during training.

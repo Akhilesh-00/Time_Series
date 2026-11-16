@@ -1,8 +1,8 @@
 # Shows progress of LITE ablation runs.
-# Usage:  .\check_status.ps1            (snapshot of all experiments)
-#         .\check_status.ps1 -Follow    (live tail of the newest log, Ctrl+C to stop)
+# Usage:  .\scripts\check_status.ps1            (snapshot of all experiments)
+#         .\scripts\check_status.ps1 -Follow    (live tail of the newest log, Ctrl+C to stop)
 param([switch]$Follow)
-Set-Location $PSScriptRoot
+Set-Location (Join-Path $PSScriptRoot "..")
 
 $running = Get-Process python -ErrorAction SilentlyContinue
 if ($running) { Write-Host "Status: RUNNING (python PID $($running.Id -join ', '))" -ForegroundColor Green }

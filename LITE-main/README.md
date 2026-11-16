@@ -6,14 +6,21 @@ The codebase builds on the LITE work by A. Ismail-Fawaz, M. Devanne, S. Berretti
 
 ## Project structure
 
-- `src/`: LITE classifier and data-loading utilities.
+**Start with the two notebooks.** Both load saved models and run on CPU in a few minutes; no training is needed.
+
+- `LITE_reproduction.ipynb`: our plain-LITE reproduction on all six datasets versus the published LITE/LITETime results (models in `reproduction_models/`).
+- `LITE_final_results.ipynb`: the improvement chosen for each dataset, with all tables and figures computed from the models in `final_models/`.
+- `experiment_results/FINAL_RESULTS.md`: written summary of every method tried and its result; per-experiment CSVs sit alongside it, and superseded 100-epoch runs are in `experiment_results/archive/`.
+
+Code and supporting files:
+
+- `src/`: LITE classifier and data-loading utilities (from the original LITE project).
 - `main.py`: single-dataset training entry point.
-- `run_ablation.py`: per-seed training and ablation runner.
+- `run_ablation.py`: per-seed training and ablation runner (all conditions, augmentation flags).
 - `ensemble_eval.py`: ensemble evaluation from saved run outputs.
-- `recalibrate_eval.py`: batch normalization recalibration evaluation.
-- `experiment_results/`: result summaries and available experiment outputs.
-- `final_models/`: retained models used for the final-results recalibration evaluation.
-- `LITE_reproduction.ipynb` and other `*.ipynb` files: notebook-based reproduction and experiment workflows.
+- `recalibrate_eval.py`: batch normalization recalibration and mixed-ensemble evaluation.
+- `notebooks/kaggle_training/`: the Kaggle notebooks that trained the models (GPU T4 ×2).
+- `scripts/`: shell scripts used for local GPU runs under WSL, and a progress monitor.
 
 ## Datasets and data loading
 
@@ -97,18 +104,18 @@ The consolidated findings and experiment-specific caveats are in [`experiment_re
 | --- | --- | ---: | ---: |
 | Wine | Scale-only, 5 models | 87.0% | 66.7% |
 | PigAirwayPressure | Scale-only, 5 models (seeds 5–9) | 60.6% | 47.1% |
-| SemgHandMovementCh2 | Recalibration, 4 models | 54.2% | 51.1% (published 5-model reference) |
+| SemgHandMovementCh2 | Recalibration, 4 models | 54.2% | 52.5% (LITETime-4, size-matched) |
 | OliveOil | Plain LITE or recalibration, 5 models | 83.3% | 80.0% |
 | ShapeletSim | Scale-only, 5 models | 76.1% | 75.0% |
 | Beef | Plain LITE, 5 models | 76.7% | 76.7% |
 
-Ensemble sizes vary where identified: the SemgHandMovementCh2 recalibration result uses four models; the other rows above use five. The SemgHandMovementCh2 comparison is not size-matched: our recalibrated result uses four models, while 51.1% is the published five-model LITETime reference. These best methods were selected after examining test results, so the table is exploratory and may overstate general performance. It does not demonstrate that one change improves all datasets.
+The SemgHandMovementCh2 recalibration result uses four models and is compared with the published four-model value from the LITE ensemble study (`results_ensemble_study.csv`); the other rows use five models. These best methods were selected after examining test results, so the table is exploratory and may overstate general performance. It does not demonstrate that one change improves all datasets.
 
 ### Saved results and models
 
 Per-run CSVs and plots are written under the output directory supplied to `run_ablation.py`. Committed aggregate files and experiment notes are under `experiment_results/`.
 
-The retained models used for the final-results recalibration evaluation are in `final_models/`. Checkpoints from every exploratory run and per-run recalibration CSVs were not retained, so the repository does not provide all artifacts needed to regenerate every reported result from individual predictions.
+The models behind the final results are in `final_models/`, and the plain-LITE reproduction models are in `reproduction_models/`; both notebooks regenerate their numbers, including all recalibration results, from these files. Checkpoints were not kept for the earliest experiments (full augmentation, augmentation components, SemgHand scale 0.1), so those results come from the accuracies logged during training.
 
 ## Original work
 
