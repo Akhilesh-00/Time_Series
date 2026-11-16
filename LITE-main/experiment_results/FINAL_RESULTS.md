@@ -73,7 +73,14 @@ None of these methods improved mean test accuracy over plain LITE in this compar
 | First difference | 42.5 | 23.9 |
 | Validation + refit | 38.3 | not possible |
 
-Validation-trained ensembles also tracked plain ones on SemgHand (4 models: 51.3% vs 52.0%). In the paired five-seed single-model comparison, validation reached 46.4% mean accuracy versus 46.6% for plain LITE, with mean training times of 3.5 and 20.2 minutes, respectively.\n\n| Method | Mean test accuracy | Mean training time |\n| --- | --- | --- |\n| Plain LITE | 46.6% | 20.2 min |\n| Validation-based early stopping | 46.4% | 3.5 min |\n\nFirst difference was later tried on Beef and ShapeletSim (table further down).
+Validation-trained ensembles also tracked plain ones on SemgHand (4 models: 51.3% vs 52.0%). In the paired five-seed single-model comparison, validation reached 46.4% mean accuracy versus 46.6% for plain LITE, with mean training times of 3.5 and 20.2 minutes, respectively.
+
+| Method | Mean test accuracy | Mean training time |
+| --- | --- | --- |
+| Plain LITE | 46.6% | 20.2 min |
+| Validation-based early stopping | 46.4% | 3.5 min |
+
+First difference was later tried on Beef and ShapeletSim (table further down).
 
 ### Augmentation components (methods 5–6)
 
