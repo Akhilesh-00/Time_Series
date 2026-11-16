@@ -1,16 +1,16 @@
 # Improving LITE: Methods Tried and Results
 
-As of 2026-11-13.
+Updated 2026-11-16.
 
 ## Summary
 
-Two changes beat the LITE paper on some datasets: scale-only augmentation (Wine 87.0% vs 66.7%, PigAirwayPressure 60.6% vs 47.1%) and batch-norm recalibration after training (SemgHandMovementCh2, PigAirwayPressure, Wine, OliveOil). No single method helped on every dataset, and Beef only tied the paper (76.7%).
+The results are dataset-dependent. Scale-only augmentation produced the strongest observed ensemble scores on Wine (87.0% vs 66.7% for published LITETime) and PigAirwayPressure (60.6% vs 47.1%). Batch normalization recalibration improved selected results, including a four-model SemgHandMovementCh2 ensemble at 54.2%; its published comparison value of 51.1% is for a five-model LITETime ensemble, so that comparison is not size-matched. On SemgHandMovementCh2, validation-based early stopping preserved mean accuracy (46.4% vs 46.6% for plain LITE) while reducing mean training time (3.5 vs 20.2 minutes). No method helped every dataset, and Beef tied the paper reference (76.7%).
 
-Validation-based training, first-difference input and the full augmentation did not improve on plain LITE. All accuracies below are test accuracy in percent; ensembles average the softmax outputs of 5 models, as LITETime does.
+Validation-based training, first-difference input and full augmentation did not improve test accuracy over plain LITE in the comparisons reported below, although validation-based early stopping substantially reduced training time on SemgHandMovementCh2. Accuracies are test accuracy in percent. Most ensembles average five models, matching LITETime; where an experiment uses a different ensemble size, it is identified explicitly.
 
 ## Setup
 
-Six UCR datasets were used, loaded with aeon and z-normalised per series as in the LITE code. Paper numbers come from the repo's `results.csv` and `results_ensemble_study.csv`.
+Six UCR datasets were used, loaded with aeon and z-normalised per series as in the LITE code. Paper numbers come from the repository's `results.csv` and `results_ensemble_study.csv`. LITETime references are five-model results unless a model-count variant is named explicitly.
 
 | Dataset | Train / test series | Classes | Length | Paper LITE (%) | Paper LITETime (%) |
 | --- | --- | --- | --- | --- | --- |
@@ -63,7 +63,7 @@ Ten changes to LITE were tested; the first four change how training is controlle
 
 ### Validation and first difference (methods 1–4)
 
-None of these beat plain LITE. Mean single-model accuracy, 1500 epochs, seeds 0–4.
+None of these methods improved mean test accuracy over plain LITE in this comparison. Validation-based early stopping reduced training time while preserving mean accuracy. Mean single-model accuracy, 1500 epochs, seeds 0–4.
 
 | Method | SemgHandMovementCh2 (%) | PigAirwayPressure (%) |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ None of these beat plain LITE. Mean single-model accuracy, 1500 epochs, seeds 0�
 | First difference | 42.5 | 23.9 |
 | Validation + refit | 38.3 | not possible |
 
-Validation-trained ensembles also tracked plain ones on SemgHand (4 models: 51.3% vs 52.0%). First difference was later tried on Beef and ShapeletSim (table further down).
+Validation-trained ensembles also tracked plain ones on SemgHand (4 models: 51.3% vs 52.0%). In the paired five-seed single-model comparison, validation reached 46.4% mean accuracy versus 46.6% for plain LITE, with mean training times of 3.5 and 20.2 minutes, respectively.\n\n| Method | Mean test accuracy | Mean training time |\n| --- | --- | --- |\n| Plain LITE | 46.6% | 20.2 min |\n| Validation-based early stopping | 46.4% | 3.5 min |\n\nFirst difference was later tried on Beef and ShapeletSim (table further down).
 
 ### Augmentation components (methods 5–6)
 
@@ -115,48 +115,48 @@ First difference improved Beef single models, which are spectra, and hurt Shapel
 
 ### Batch-norm recalibration (methods 9–10)
 
-Recalibration improved 4 of 6 datasets without retraining. It mainly repairs models that fit the training set in training mode but fail in prediction mode; plain Wine models scored only 56–63% on their own training data before recalibration.
+Recalibration improved the single-model mean on four of six datasets and changed ensemble accuracy on several datasets, without retraining. Wine training-mode and prediction-mode scores differed in the available runs; this is consistent with a possible batch-normalization-statistics mismatch, but the stored and recomputed statistics were not directly compared, so the mechanism is not established.
 
 | Dataset | Single, before → after (%) | Ensemble, before → after (%) | Paper LITETime (%) |
 | --- | --- | --- | --- |
 | Wine | 63.0 → **78.5** | 55.6 → **83.3** | 66.7 |
 | PigAirwayPressure (10 seeds) | 32.9 → **40.2** | 46.6 → **50.7** (5 models), 49.0 → **51.0** (10 models) | 47.1 (LITETime-10: 49.5) |
-| SemgHandMovementCh2 (4 seeds) | 46.8 → **49.5** | 52.0 → **54.2** (4 models) | 51.1 |
+| SemgHandMovementCh2 (4 seeds) | 46.8 → **49.5** | 52.0 → **54.2** (4 models) | 51.1 (5 models) |
 | OliveOil | 79.3 → **82.7** | 83.3 → 83.3 | 80.0 |
 | ShapeletSim | 72.7 → 72.2 | 73.9 → 73.9 | 75.0 |
 | Beef | 72.0 → 70.7 | 76.7 → 73.3 | 76.7 |
 
 ![PigAirwayPressure ensembles before and after recalibration vs the paper's LITETime-k](figures/recalibration_pig.png)
 
-Recalibrating scale-only models raised single models (Pig 42.9% → 51.8%, Wine 70.4% → 80.4%) but not ensembles (Pig 60.6% → 60.1%, Wine 87.0% → 79.6%). The two fixes overlap rather than add up.
+Recalibrating scale-only models raised single-model scores (Pig 42.9% → 51.8%, Wine 70.4% → 80.4%) but did not improve their ensembles (Pig 60.6% → 60.1%, Wine 87.0% → 79.6%). These aggregate results show that the single-model gains did not transfer to the ensembles; they do not identify why.
 
 ## Best result per dataset
 
-Five of six datasets beat the paper's LITETime with at least one method; Beef tied. The best method differs by dataset.
+Five of six datasets had a best observed score numerically above the listed paper LITETime reference; Beef tied. The best method differs by dataset. The SemgHandMovementCh2 best result uses four models, while its 51.1% paper reference uses five, so that row is not a size-matched comparison.
 
-![Best 5-model ensemble per dataset vs paper LITETime](figures/best_vs_paper.png)
+![Best observed ensemble result per dataset vs paper LITETime](figures/best_vs_paper.png)
 
 | Dataset | Best method | Ours (%) | Paper LITETime (%) | Gap in test series |
 | --- | --- | --- | --- | --- |
 | PigAirwayPressure | Scale only | 60.6 | 47.1 | +28 of 208 |
 | Wine | Scale only | 87.0 | 66.7 | +11 of 54 |
-| SemgHandMovementCh2 | Recalibration (4 models) | 54.2 | 51.1 | +14 of 450 |
+| SemgHandMovementCh2 | Recalibration (4 models) | 54.2 | 51.1 (5 models) | +14 of 450 |
 | ShapeletSim | Scale only | 76.1 | 75.0 | +2 of 180 |
 | OliveOil | Plain LITE or recalibration | 83.3 | 80.0 | +1 of 30 |
 | Beef | Plain LITE or first difference | 76.7 | 76.7 | 0 of 30 |
 
-If one method has to be fixed in advance for every dataset, recalibration is the safest: it never lost more than about one test series and needs no retraining.
+Recalibration is a candidate for a preselected follow-up because it requires no retraining and improved several observed results. These exploratory, post-hoc comparisons do not establish it as the safest method on new datasets.
 
 ## Caveats
 
-The largest gains (Pig, Wine, SemgHand) are well beyond seed noise; the small ones (ShapeletSim, OliveOil, Beef) are not.
+These are best-observed point estimates. Seed counts are small and methods were selected after viewing test results, so the apparent gains may not estimate performance on new data.
 
 - **Small test sets:** on Beef and OliveOil one test series is 3.3 points, on Wine 1.9 points.
 - **Few seeds:** 3 to 10 per comparison. The Pig single-model gain from scale only has p = 0.10 over 10 seeds.
 - **Method picked per dataset after seeing test results:** the best-per-dataset table is optimistic. A fair claim fixes one method for all datasets in advance.
 - **Machine-to-machine variation:** the same plain LITE ensemble on ShapeletSim scored 73.9% on the laptop and 77.2% on Kaggle.
 - **One scale-only Pig ensemble:** only seeds 5–9 kept their checkpoints, so 60.6% comes from a single 5-model set.
-- **Recalibration is a known technique** (sometimes called "precise BN"). The project's contribution is applying it to LITE and showing that LITE's failures on Wine and Pig come from the training/prediction mismatch in batch norm.
+- **Recalibration is related to prior evaluation-time normalization methods.** Our experiment applies a simple training-set recalibration to LITE. The results are consistent with a possible mismatch in batch-normalization statistics, but we did not directly test that mechanism or show that it caused the original Wine or Pig results.
 - **Pig seeds 2 and 3 fail under every method** (3–22%); recalibration recovers them only partly.
 
 ## Code and raw results
@@ -172,4 +172,4 @@ The largest gains (Pig, Wine, SemgHand) are well beyond seed noise; the small on
 | Kaggle notebooks | `LITE_*_kaggle.ipynb` (augment, augment components, augconfirm, ensemble, ensemble Beef/Pig, SemgHand scale 0.05, ShapeletSim first difference) |
 | Per-run results (CSV) | `experiment_results/` — one folder per experiment, e.g. `scale_only_laptop/`, `augconfirm_pig_kaggle/`, `shapelet_first_difference_kaggle/` |
 
-The models used by the final notebook are in `final_models/`. Other checkpoints (methods not used in the final results) are not in the repo; they stay in the local `results_ablation/` folders and the Kaggle output zips.
+The retained models used by the final notebook are in `final_models/`. Checkpoints for other exploratory methods are not included in the repository. Per-run recalibration CSVs were also not present in the reviewed project files, so the recalibration aggregates cannot be fully audited by seed or regenerated from per-run predictions alone.
