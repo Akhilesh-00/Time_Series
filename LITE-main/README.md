@@ -41,7 +41,7 @@ python -m pip install --upgrade pip
 python -m pip install -e .
 ```
 
-On Windows, activate the environment with `.venv/Scripts/activate` instead of the `source` command.
+On Windows, activate the environment in your terminal using the activation script created inside `.venv`.
 
 The editable install reads dependencies from `pyproject.toml`, including TensorFlow, Keras, and `aeon`. For available runner options, use:
 
@@ -91,7 +91,7 @@ Use a separate output directory for each configuration so results do not overwri
 
 ## Results
 
-The consolidated findings and experiment-specific caveats are in [`experiment_results/FINAL_RESULTS.md`](experiment_results/FINAL_RESULTS.md). These are the best observed results in the experiments, not the outcome of one universally effective method:
+The consolidated findings and experiment-specific caveats are in [`experiment_results/FINAL_RESULTS.md`](experiment_results/FINAL_RESULTS.md). In the separate paired five-seed SemgHandMovementCh2 comparison, validation-based early stopping scored 46.4% mean accuracy versus 46.6% for plain LITE and reduced mean training time from 20.2 to 3.5 minutes. The table below lists the best observed results, not the outcome of one universally effective method:
 
 | Dataset | Best observed setup | Accuracy | Published LITETime reference |
 | --- | --- | ---: | ---: |
@@ -102,7 +102,7 @@ The consolidated findings and experiment-specific caveats are in [`experiment_re
 | ShapeletSim | Scale-only, 5 models | 76.1% | 75.0% |
 | Beef | Plain LITE, 5 models | 76.7% | 76.7% |
 
-Ensemble sizes vary where identified: the SemgHandMovementCh2 recalibration result uses four models; the other rows above use five. The Semg comparison is therefore shown against the size-matched four-model LITETime reference. These best methods were selected after examining test results, so the table is exploratory and may overstate general performance. It does not demonstrate that one change improves all datasets.
+Ensemble sizes vary where identified: the SemgHandMovementCh2 recalibration result uses four models; the other rows above use five. The SemgHandMovementCh2 comparison is not size-matched: our recalibrated result uses four models, while 51.1% is the published five-model LITETime reference. These best methods were selected after examining test results, so the table is exploratory and may overstate general performance. It does not demonstrate that one change improves all datasets.
 
 ### Saved results and models
 
